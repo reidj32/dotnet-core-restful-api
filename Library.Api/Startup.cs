@@ -1,5 +1,6 @@
 ﻿using Library.Api.Entities;
 using Library.Api.Helpers;
+using Library.Api.Models;
 using Library.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,7 @@ namespace Library.Api
             {
                 setupAction.ReturnHttpNotAcceptable = true;
                 setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
+                setupAction.InputFormatters.Add(new XmlDataContractSerializerInputFormatter());
             });
 
             string connectionString = Configuration["ConnectionStrings:LibraryDB"];
@@ -57,10 +59,15 @@ namespace Library.Api
 
             AutoMapper.Mapper.Initialize(cfg =>
             {
-                cfg.CreateMap<Author, Models.AuthorDto>()
+                cfg.CreateMap<Author, AuthorDto>()
                     .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
                     .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.DateOfBirth.GetCurrentAge()));
-                cfg.CreateMap<Book, Models.BookDto>();
+
+                cfg.CreateMap<Book, BookDto>();
+
+                cfg.CreateMap<AuthorForCreationDto, Author>();
+
+                cfg.CreateMap<BookForCreationDto, Book>();
             });
 
             libraryContext.Database.Migrate();

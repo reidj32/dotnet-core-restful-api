@@ -1,4 +1,5 @@
-﻿using Library.Api.Entities;
+﻿using AutoMapper;
+using Library.Api.Entities;
 using Library.Api.Models;
 using Library.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -26,12 +27,12 @@ namespace Library.Api.Controllers
             }
 
             IEnumerable<Book> booksForAuthorFromRepo = _repository.GetBooksForAuthor(authorId);
-            IEnumerable<BookDto> booksForAuthor = AutoMapper.Mapper.Map<IEnumerable<BookDto>>(booksForAuthorFromRepo);
+            IEnumerable<BookDto> booksForAuthor = Mapper.Map<IEnumerable<BookDto>>(booksForAuthorFromRepo);
 
             return Ok(booksForAuthor);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetBookForAuthor")]
         public IActionResult GetBookForAuthor(Guid authorId, Guid id)
         {
             if (!_repository.AuthorExists(authorId))
@@ -46,9 +47,61 @@ namespace Library.Api.Controllers
                 return NotFound();
             }
 
-            BookDto bookForAuthor = AutoMapper.Mapper.Map<BookDto>(bookForAuthorFromRepo);
+            BookDto bookForAuthor = Mapper.Map<BookDto>(bookForAuthorFromRepo);
 
             return Ok(bookForAuthor);
+        }
+
+        [HttpPost]
+        public IActionResult CreateBookForAuthor(Guid authorId, [FromBody] BookForCreationDto book)
+        {
+            if (book == null)
+            {
+                return BadRequest();
+            }
+
+            if (!_repository.AuthorExists(authorId))
+            {
+                return NotFound();
+            }
+
+            Book bookEntity = Mapper.Map<Book>(book);
+
+            _repository.AddBookForAuthor(authorId, bookEntity);
+
+            if (!_repository.Save())
+            {
+                throw new Exception($"Creating a book for author {authorId} failed on save.");
+            }
+
+            BookDto bookToReturn = Mapper.Map<BookDto>(bookEntity);
+
+            return CreatedAtRoute("GetBookForAuthor", new { authorId, id = bookToReturn.Id }, bookToReturn);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBookForAuthor(Guid authorId, Guid id)
+        {
+            if (!_repository.AuthorExists(authorId))
+            {
+                return NotFound();
+            }
+
+            Book bookForAuthorFromRepo = _repository.GetBookForAuthor(authorId, id);
+
+            if (bookForAuthorFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            _repository.DeleteBook(bookForAuthorFromRepo);
+
+            if (!_repository.Save())
+            {
+                throw new Exception($"Deleting book {id} for author {authorId} failed on save.");
+            }
+
+            return NoContent();
         }
     }
 }
