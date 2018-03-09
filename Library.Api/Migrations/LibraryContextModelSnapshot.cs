@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 
-namespace Library.API.Migrations
+namespace Library.Api.Migrations
 {
     [DbContext(typeof(LibraryContext))]
     partial class LibraryContextModelSnapshot : ModelSnapshot
@@ -15,7 +15,7 @@ namespace Library.API.Migrations
                 .HasAnnotation("ProductVersion", "1.0.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Library.API.Entities.Author", b =>
+            modelBuilder.Entity("Library.Api.Entities.Author", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -39,7 +39,7 @@ namespace Library.API.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("Library.API.Entities.Book", b =>
+            modelBuilder.Entity("Library.Api.Entities.Book", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -60,9 +60,9 @@ namespace Library.API.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("Library.API.Entities.Book", b =>
+            modelBuilder.Entity("Library.Api.Entities.Book", b =>
                 {
-                    b.HasOne("Library.API.Entities.Author", "Author")
+                    b.HasOne("Library.Api.Entities.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade);
