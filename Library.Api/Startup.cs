@@ -68,6 +68,8 @@ namespace Library.Api
                 cfg.CreateMap<AuthorForCreationDto, Author>();
 
                 cfg.CreateMap<BookForCreationDto, Book>();
+
+                cfg.CreateMap<BookForUpdateDto, Book>();
             });
 
             libraryContext.Database.Migrate();
