@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Library.Api.Entities;
+using Library.Api.Helpers;
 using Library.Api.Models;
 using Library.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -13,19 +15,75 @@ namespace Library.Api.Controllers
     public class AuthorsController : Controller
     {
         private readonly ILibraryRepository _repository;
+        private readonly IUrlHelper _urlHelper;
 
-        public AuthorsController(ILibraryRepository repository)
+        public AuthorsController(ILibraryRepository repository, IUrlHelper urlHelper)
         {
             _repository = repository;
+            _urlHelper = urlHelper;
         }
 
-        [HttpGet]
-        public IActionResult GetAuthors()
+        [HttpGet(Name = "GetAuthors")]
+        public IActionResult GetAuthors(AuthorsResourceParameters parameters)
         {
-            IEnumerable<Author> authorsFromRepo = _repository.GetAuthors();
+            PagedList<Author> authorsFromRepo = _repository.GetAuthors(parameters);
+
+            string previousPageLink = authorsFromRepo.HasPrevious
+                ? CreateAuthorsResourceUri(parameters, ResourceUriType.PreviousPage)
+                : null;
+
+            string nextPageLink = authorsFromRepo.HasNext
+                ? CreateAuthorsResourceUri(parameters, ResourceUriType.NextPage)
+                : null;
+
+            var paginationMetadata = new
+            {
+                authorsFromRepo.TotalCount,
+                authorsFromRepo.PageSize,
+                authorsFromRepo.CurrentPage,
+                authorsFromRepo.TotalPages,
+                previousPageLink,
+                nextPageLink
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(paginationMetadata));
+
             IEnumerable<AuthorDto> authors = Mapper.Map<IEnumerable<AuthorDto>>(authorsFromRepo);
 
             return Ok(authors);
+        }
+
+        private string CreateAuthorsResourceUri(AuthorsResourceParameters parameters, ResourceUriType type)
+        {
+            switch (type)
+            {
+                case ResourceUriType.PreviousPage:
+                    return _urlHelper.Link("GetAuthors", new
+                    {
+                        searchQuery = parameters.SearchQuery,
+                        genre = parameters.Genre,
+                        pageNumber = parameters.PageNumber - 1,
+                        pageSize = parameters.PageSize
+                    });
+
+                case ResourceUriType.NextPage:
+                    return _urlHelper.Link("GetAuthors", new
+                    {
+                        searchQuery = parameters.SearchQuery,
+                        genre = parameters.Genre,
+                        pageNumber = parameters.PageNumber + 1,
+                        pageSize = parameters.PageSize
+                    });
+
+                default:
+                    return _urlHelper.Link("GetAuthors", new
+                    {
+                        searchQuery = parameters.SearchQuery,
+                        genre = parameters.Genre,
+                        pageNumber = parameters.PageNumber,
+                        pageSize = parameters.PageSize
+                    });
+            }
         }
 
         [HttpGet("{id}", Name = "GetAuthor")]

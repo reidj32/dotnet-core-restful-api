@@ -1,12 +1,13 @@
 ﻿using Library.Api.Entities;
 using System;
 using System.Collections.Generic;
+using Library.Api.Helpers;
 
 namespace Library.Api.Services
 {
     public interface ILibraryRepository
     {
-        IEnumerable<Author> GetAuthors();
+        PagedList<Author> GetAuthors(AuthorsResourceParameters parameters);
 
         Author GetAuthor(Guid authorId);
 

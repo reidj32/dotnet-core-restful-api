@@ -1,4 +1,5 @@
 ﻿using Library.Api.Entities;
+using Library.Api.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,9 +64,30 @@ namespace Library.Api.Services
             return _context.Authors.FirstOrDefault(a => a.Id == authorId);
         }
 
-        public IEnumerable<Author> GetAuthors()
+        public PagedList<Author> GetAuthors(AuthorsResourceParameters parameters)
         {
-            return _context.Authors.OrderBy(a => a.FirstName).ThenBy(a => a.LastName);
+            IQueryable<Author> query = _context.Authors
+                .OrderBy(a => a.FirstName)
+                .ThenBy(a => a.LastName).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(parameters.Genre))
+            {
+                string clause = parameters.Genre.Trim().ToLowerInvariant();
+
+                query = query.Where(a => a.Genre.ToLowerInvariant() == clause);
+            }
+
+            if (!string.IsNullOrWhiteSpace(parameters.SearchQuery))
+            {
+                string clause = parameters.SearchQuery.Trim().ToLowerInvariant();
+
+                // think about using full-text search on database
+                query = query.Where(a => a.Genre.ToLowerInvariant().Contains(clause) ||
+                                         a.FirstName.ToLowerInvariant().Contains(clause) ||
+                                         a.LastName.ToLowerInvariant().Contains(clause));
+            }
+
+            return PagedList<Author>.Create(query, parameters.PageNumber, parameters.PageSize);
         }
 
         public IEnumerable<Author> GetAuthors(IEnumerable<Guid> authorIds)
