@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Library.Api.Entities;
+using Library.Api.Helpers;
 using Library.Api.Models;
 using Library.Api.Services;
 using Microsoft.AspNetCore.JsonPatch;
@@ -61,6 +62,17 @@ namespace Library.Api.Controllers
                 return BadRequest();
             }
 
+            if (book.Description == book.Title)
+            {
+                ModelState.AddModelError(nameof(BookForCreationDto),
+                    "The provided description should be different from the title.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return new UnprocessableEntityObjectResult(ModelState);
+            }
+
             if (!_repository.AuthorExists(authorId))
             {
                 return NotFound();
@@ -111,6 +123,17 @@ namespace Library.Api.Controllers
             if (book == null)
             {
                 return BadRequest();
+            }
+
+            if (book.Description == book.Title)
+            {
+                ModelState.AddModelError(nameof(BookForUpdateDto),
+                    "The provided description should be different from the title.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return new UnprocessableEntityObjectResult(ModelState);
             }
 
             if (!_repository.AuthorExists(authorId))
