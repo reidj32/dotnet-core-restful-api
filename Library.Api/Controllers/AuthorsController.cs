@@ -16,16 +16,24 @@ namespace Library.Api.Controllers
     {
         private readonly ILibraryRepository _repository;
         private readonly IUrlHelper _urlHelper;
+        private readonly IPropertyMappingService _propertyMappingService;
 
-        public AuthorsController(ILibraryRepository repository, IUrlHelper urlHelper)
+        public AuthorsController(ILibraryRepository repository, IUrlHelper urlHelper,
+            IPropertyMappingService propertyMappingService)
         {
             _repository = repository;
             _urlHelper = urlHelper;
+            _propertyMappingService = propertyMappingService;
         }
 
         [HttpGet(Name = "GetAuthors")]
         public IActionResult GetAuthors(AuthorsResourceParameters parameters)
         {
+            if (!_propertyMappingService.ValidMappingExistsFor<AuthorDto, Author>(parameters.OrderBy))
+            {
+                return BadRequest();
+            }
+
             PagedList<Author> authorsFromRepo = _repository.GetAuthors(parameters);
 
             string previousPageLink = authorsFromRepo.HasPrevious
@@ -60,6 +68,7 @@ namespace Library.Api.Controllers
                 case ResourceUriType.PreviousPage:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        orderBy = parameters.OrderBy,
                         searchQuery = parameters.SearchQuery,
                         genre = parameters.Genre,
                         pageNumber = parameters.PageNumber - 1,
@@ -69,6 +78,7 @@ namespace Library.Api.Controllers
                 case ResourceUriType.NextPage:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        orderBy = parameters.OrderBy,
                         searchQuery = parameters.SearchQuery,
                         genre = parameters.Genre,
                         pageNumber = parameters.PageNumber + 1,
@@ -78,6 +88,7 @@ namespace Library.Api.Controllers
                 default:
                     return _urlHelper.Link("GetAuthors", new
                     {
+                        orderBy = parameters.OrderBy,
                         searchQuery = parameters.SearchQuery,
                         genre = parameters.Genre,
                         pageNumber = parameters.PageNumber,

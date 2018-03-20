@@ -49,6 +49,8 @@ namespace Library.Api
 
             services.AddScoped<IUrlHelper, UrlHelper>(factory =>
                 new UrlHelper(factory.GetService<IActionContextAccessor>().ActionContext));
+
+            services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Library.Api.Models;
+using System;
 
 namespace Library.Api.Helpers
 {
@@ -7,6 +8,7 @@ namespace Library.Api.Helpers
         private const int MaxPageSize = 20;
         private const int DefaultPageSize = 10;
         private const int DefaultPageNumber = 1;
+        private const string DefaultOrderBy = nameof(AuthorDto.Name);
 
         private int _pageSize = DefaultPageSize;
 
@@ -21,5 +23,7 @@ namespace Library.Api.Helpers
         public string Genre { get; set; }
 
         public string SearchQuery { get; set; }
+
+        public string OrderBy { get; set; } = DefaultOrderBy;
     }
 }
