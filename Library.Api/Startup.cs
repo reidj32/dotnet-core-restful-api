@@ -38,6 +38,10 @@ namespace Library.Api
                 setupAction.ReturnHttpNotAcceptable = true;
                 setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
                 setupAction.InputFormatters.Add(new XmlDataContractSerializerInputFormatter());
+            }).AddJsonOptions(options =>
+            {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
             string connectionString = Configuration["ConnectionStrings:LibraryDB"];
@@ -51,6 +55,8 @@ namespace Library.Api
                 new UrlHelper(factory.GetService<IActionContextAccessor>().ActionContext));
 
             services.AddTransient<IPropertyMappingService, PropertyMappingService>();
+
+            services.AddTransient<ITypeHelperService, TypeHelperService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

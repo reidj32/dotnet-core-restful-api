@@ -25,5 +25,7 @@ namespace Library.Api.Helpers
         public string SearchQuery { get; set; }
 
         public string OrderBy { get; set; } = DefaultOrderBy;
+
+        public string Fields { get; set; }
     }
 }
