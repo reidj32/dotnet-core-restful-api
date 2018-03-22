@@ -17,16 +17,19 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
+using System.Linq;
 
 namespace Library.Api
 {
     public class Startup
     {
-        public static IConfiguration Configuration;
+        public const string VendorMediaType = "application/vnd.marvin.hateoas+json";
+
+        private static IConfiguration _configuration;
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container. For more information
@@ -37,14 +40,32 @@ namespace Library.Api
             {
                 setupAction.ReturnHttpNotAcceptable = true;
                 setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
-                setupAction.InputFormatters.Add(new XmlDataContractSerializerInputFormatter());
+
+                XmlDataContractSerializerInputFormatter xmlDataContractSerializerInputFormatter =
+                    new XmlDataContractSerializerInputFormatter();
+
+                xmlDataContractSerializerInputFormatter.SupportedMediaTypes.Add(
+                    "application/vnd.marvin.authorwithdateofdeath.full+xml");
+
+                setupAction.InputFormatters.Add(xmlDataContractSerializerInputFormatter);
+
+                JsonOutputFormatter jsonOutputFormatter =
+                    setupAction.OutputFormatters.OfType<JsonOutputFormatter>().FirstOrDefault();
+
+                jsonOutputFormatter?.SupportedMediaTypes.Add(VendorMediaType);
+
+                JsonInputFormatter jsonInputFormatter =
+                    setupAction.InputFormatters.OfType<JsonInputFormatter>().FirstOrDefault();
+
+                jsonInputFormatter?.SupportedMediaTypes.Add("application/vnd.marvin.author.full+json");
+                jsonInputFormatter?.SupportedMediaTypes.Add("application/vnd.marvin.authorwithdateofdeath.full+json");
             }).AddJsonOptions(options =>
             {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
-            string connectionString = Configuration["ConnectionStrings:LibraryDB"];
+            string connectionString = _configuration["ConnectionStrings:LibraryDB"];
             services.AddDbContext<LibraryContext>(o => o.UseSqlServer(connectionString));
 
             services.AddScoped<ILibraryRepository, LibraryRepository>();
@@ -100,11 +121,13 @@ namespace Library.Api
             {
                 cfg.CreateMap<Author, AuthorDto>()
                     .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}"))
-                    .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.DateOfBirth.GetCurrentAge()));
+                    .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.DateOfBirth.GetCurrentAge(src.DateOfDeath)));
 
                 cfg.CreateMap<Book, BookDto>();
 
                 cfg.CreateMap<AuthorForCreationDto, Author>();
+
+                cfg.CreateMap<AuthorForCreationWithDateOfDeathDto, Author>();
 
                 cfg.CreateMap<BookForCreationDto, Book>();
 

@@ -193,7 +193,8 @@ namespace Library.Api.Controllers
         }
 
         [HttpPatch("{id}", Name = "PartiallyUpdateBookForAuthor")]
-        public IActionResult PartiallyUpdateBookForAuthor(Guid authorId, Guid id, [FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc)
+        public IActionResult PartiallyUpdateBookForAuthor(Guid authorId, Guid id,
+            [FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc)
         {
             if (patchDoc == null)
             {
