@@ -30,6 +30,7 @@ namespace Library.Api.Controllers
             _typeHelperService = typeHelperService;
         }
 
+        [HttpHead]
         [HttpGet(Name = "GetAuthors")]
         public IActionResult GetAuthors(AuthorsResourceParameters parameters,
             [FromHeader(Name = "Accept")] string mediaType)
@@ -310,6 +311,13 @@ namespace Library.Api.Controllers
             }
 
             return links;
+        }
+
+        [HttpOptions]
+        public IActionResult GetAuthorsOptions()
+        {
+            Response.Headers.Add("Allow", "GET,OPTIONS,POST");
+            return Ok();
         }
     }
 }
