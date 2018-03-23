@@ -1,13 +1,13 @@
 # Useful Links
 
-[FluentValidation](https://github.com/JeremySkinner/FluentValidation)
-[Marvin.Cache.Headers](https://github.com/KevinDockx/HttpCacheHeaders)
-[ETag in Angular](https://stackoverflow.com/questions/41782758/etag-implementation-in-angular2)
-[ETag in AngularJS](https://github.com/shaungrady/angular-http-etag)
-[AspNetCoreRateLimit](https://github.com/stefanprodan/AspNetCoreRateLimit)
-[Newman](https://github.com/postmanlabs/newman)
-[Swagger OpenAPI](https://swagger.io/specification/)
-[Swashbuckle](https://github.com/domaindrivendev/Swashbuckle)
+* [FluentValidation](https://github.com/JeremySkinner/FluentValidation)
+* [Marvin.Cache.Headers](https://github.com/KevinDockx/HttpCacheHeaders)
+* [ETag in Angular](https://stackoverflow.com/questions/41782758/etag-implementation-in-angular2)
+* [ETag in AngularJS](https://github.com/shaungrady/angular-http-etag)
+* [AspNetCoreRateLimit](https://github.com/stefanprodan/AspNetCoreRateLimit)
+* [Newman](https://github.com/postmanlabs/newman)
+* [Swagger OpenAPI](https://swagger.io/specification/)
+* [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle)
 
 ## Additional Shaping Options
 
