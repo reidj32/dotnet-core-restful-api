@@ -5,6 +5,7 @@
 [ETag in Angular](https://stackoverflow.com/questions/41782758/etag-implementation-in-angular2)
 [ETag in AngularJS](https://github.com/shaungrady/angular-http-etag)
 [AspNetCoreRateLimit](https://github.com/stefanprodan/AspNetCoreRateLimit)
+[Newman](https://github.com/postmanlabs/newman)
 
 ## Additional Shaping Options
 
@@ -22,3 +23,8 @@
   * [JSON-API](http://jsonapi.org/)
   * [JSON-LD](http://json-ld.org/)
   * Many more...
+
+## Build Automation
+
+1. Install Newman (link above)
+2. Run Newman from CLI as a build step `newman -c mycollection.postman_collection --exitCode 1`
