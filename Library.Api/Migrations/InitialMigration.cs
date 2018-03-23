@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
+// ReSharper disable RedundantArgumentDefaultValue
+
 namespace Library.API.Migrations
 {
     public partial class InitialMigration : Migration

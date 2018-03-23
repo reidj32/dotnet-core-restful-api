@@ -54,9 +54,10 @@ namespace Library.Api.Controllers
                 return BadRequest();
             }
 
-            IEnumerable<Author> authorEntities = _repository.GetAuthors(ids);
+            IEnumerable<Guid> authorIds = ids.ToList();
+            IEnumerable<Author> authorEntities = _repository.GetAuthors(authorIds);
 
-            if (ids.Count() != authorEntities.Count())
+            if (authorIds.Count() != authorEntities.Count())
             {
                 return NotFound();
             }

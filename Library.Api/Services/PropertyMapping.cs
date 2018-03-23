@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+// ReSharper disable UnusedTypeParameter
+
 namespace Library.Api.Services
 {
     public class PropertyMapping<TSource, TDestination> : IPropertyMapping
