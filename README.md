@@ -4,6 +4,7 @@
 [Marvin.Cache.Headers](https://github.com/KevinDockx/HttpCacheHeaders)
 [ETag in Angular](https://stackoverflow.com/questions/41782758/etag-implementation-in-angular2)
 [ETag in AngularJS](https://github.com/shaungrady/angular-http-etag)
+[AspNetCoreRateLimit](https://github.com/stefanprodan/AspNetCoreRateLimit)
 
 ## Additional Shaping Options
 

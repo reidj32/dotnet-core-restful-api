@@ -1,4 +1,5 @@
-﻿using Library.Api.Entities;
+﻿using System.Collections.Generic;
+using Library.Api.Entities;
 using Library.Api.Helpers;
 using Library.Api.Models;
 using Library.Api.Services;
@@ -18,6 +19,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using System.Linq;
+using AspNetCoreRateLimit;
 
 namespace Library.Api
 {
@@ -76,6 +78,26 @@ namespace Library.Api
 
             services.AddResponseCaching();
 
+            services.AddMemoryCache();
+            services.Configure<IpRateLimitOptions>(options =>
+            {
+                options.GeneralRules = new List<RateLimitRule>
+                {
+                    new RateLimitRule
+                    {
+                        Endpoint = "*",
+                        Limit = 1000,
+                        Period = "5m"
+                    },
+                    new RateLimitRule
+                    {
+                        Endpoint = "*",
+                        Limit = 200,
+                        Period = "10s"
+                    }
+                };
+            });
+
             string connectionString = _configuration["ConnectionStrings:LibraryDB"];
             services.AddDbContext<LibraryContext>(o => o.UseSqlServer(connectionString));
 
@@ -89,6 +111,9 @@ namespace Library.Api
             services.AddTransient<IPropertyMappingService, PropertyMappingService>();
 
             services.AddTransient<ITypeHelperService, TypeHelperService>();
+
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -150,6 +175,7 @@ namespace Library.Api
             libraryContext.Database.Migrate();
             libraryContext.EnsureSeedDataForContext();
 
+            app.UseIpRateLimiting();
             app.UseResponseCaching();
             app.UseHttpCacheHeaders();
             app.UseMvc();
