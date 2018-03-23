@@ -65,6 +65,17 @@ namespace Library.Api
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
+            services.AddHttpCacheHeaders(expirationModelOptions =>
+                {
+                    expirationModelOptions.MaxAge = 600;
+                },
+                validationModelOptions =>
+                {
+                    validationModelOptions.AddMustRevalidate = true;
+                });
+
+            services.AddResponseCaching();
+
             string connectionString = _configuration["ConnectionStrings:LibraryDB"];
             services.AddDbContext<LibraryContext>(o => o.UseSqlServer(connectionString));
 
@@ -139,6 +150,8 @@ namespace Library.Api
             libraryContext.Database.Migrate();
             libraryContext.EnsureSeedDataForContext();
 
+            app.UseResponseCaching();
+            app.UseHttpCacheHeaders();
             app.UseMvc();
         }
     }
