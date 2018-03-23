@@ -6,6 +6,8 @@
 [ETag in AngularJS](https://github.com/shaungrady/angular-http-etag)
 [AspNetCoreRateLimit](https://github.com/stefanprodan/AspNetCoreRateLimit)
 [Newman](https://github.com/postmanlabs/newman)
+[Swagger OpenAPI](https://swagger.io/specification/)
+[Swashbuckle](https://github.com/domaindrivendev/Swashbuckle)
 
 ## Additional Shaping Options
 
